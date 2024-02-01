@@ -65,7 +65,7 @@ def rankItems():
     print("--Select the item you would like to rank--")
     displayCurrentItems()
     item = input()
-    if item in costGuardRankings[][1]:
+    if item in costGuardRankings[1]:
         clearScreen()
         print("You have selected: " + item)
         print("Please enter the ranking you would like to assign to this item.")
