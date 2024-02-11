@@ -2,10 +2,10 @@ import random
 import os
 import platform
 
-playerScore = 0
-playerRankings = []
-remainingItems = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
-costGuardRankings = [
+player_score = 0
+player_rankings = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+remaining_items = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
+cost_guard_rankings = [
     [1, "Shaving mirror", "Of all the items, the mirror is absolutely critical. It is the most powerful tool you have for communicating your presence. In sunlight, a simple mirror can generate five to seven million candlepower of light. The reflected sunbeam can even be seen beyond the horizon."],
     [2, "A 10-liter can of oil/gasoline mixture", "The second most critical item for signaling. The mixture will float on water and can be ignited using the matches."],
     [3, "A 25-liter container of water", "Vital to restore fluids lost through perspiration. 25 liters will supply water rations for your group for several days."],
@@ -23,15 +23,15 @@ costGuardRankings = [
     [15, "A sextant", "Useless without the relevant tables and a chronometer."]
     ]
 
-def clearScreen():
+def clear_screen():
     # Check if the operating system is Windows
     if platform.system() == "Windows":
         os.system('cls')
     else:
         os.system('clear')
 
-def runGame():
-    clearScreen()
+def run_game():
+    clear_screen()
     print("Welcome to the Cost Guard Game!")
     print("You are stranded in the middle of the Atlantic Ocean after a shipwreck.")
     print("You are in a lifeboat with 11 other people.")
@@ -40,46 +40,63 @@ def runGame():
     print("The lower your score, the better.")
     print("Good luck!")
     input("Press enter to continue...")
-    rankItems()
+    while "0" not in player_rankings:
+        rank_items(cost_guard_rankings, player_rankings)
+    #score_user_rankings()
+
     
 
-def listObjectRanks():
-    clearScreen()
-    for item in costGuardRankings:
+def list_object_ranks():
+    clear_screen()
+    for item in cost_guard_rankings:
         print("Ranking: " + str(item[0]) + "\nItem: " + item[1] + "\nReasoning: " + item[2])
         print("----------------------------------------")
 
-def scoreUserRankings():
-    for item in playerRankings:
-        playerScore += abs(int(item)-costGuardRankings[playerRankings.index(item)][0])
-    print("Your score is: " + str(playerScore))
+def score_user_rankings():
+    global player_score
+    for item in player_rankings:
+        player_score += abs(int(item)-cost_guard_rankings[player_rankings.index(item)][0])
+    print("Your score is: " + str(player_score))
 
-def displayCurrentItems():
+def display_current_items():
     print("Remaining Items: ")
-    random.shuffle(remainingItems)  # Shuffle the list of remaining items
-    for item in remainingItems:
-        print(costGuardRankings[item-1][1])
+    random.shuffle(remaining_items)  # Shuffle the list of remaining items
+    for item in remaining_items:
+        print(cost_guard_rankings[item-1][1])
 
-def rankItems():
-    clearScreen()
+def rank_items(cost_guard_rankings, player_rankings):
+    clear_screen()
     print("--Select the item you would like to rank--")
-    displayCurrentItems()
-    item = input()
-    if item in costGuardRankings[1]:
-        clearScreen()
-        print("You have selected: " + item)
+    display_current_items()
+    item_input = input("Please enter the name of the item: ")  # Capture user input for item name
+
+    # Check if the entered item name matches any items in the cost_guard_rankings
+    item_found = False
+    item_index = 0
+    for ranking_item in cost_guard_rankings:
+        if item_input.lower() == ranking_item[1].lower():  # Case-insensitive comparison
+            item_found = True
+            break
+        item_index += 1
+
+    if item_found:
+        clear_screen()
+        print("You have selected: " + item_input)
         print("Please enter the ranking you would like to assign to this item.")
         print("1 is the highest ranking, 15 is the lowest.")
-        ranking = input()
-        if ranking in range(1,16) and ranking not in playerRankings:
-            playerRankings.append(ranking)
-        else:
-            print("Invalid ranking. Please enter a number between 1 and 15.")
-            rankItems()
+        try:
+            ranking = int(input())
+            if ranking in range(1, 16) and ranking not in player_rankings:
+                player_rankings[item_index] = ranking
+            else:
+                print("Invalid ranking. Please enter a number between 1 and 15.")
+                return rank_items(cost_guard_rankings, player_rankings)
+        except ValueError:
+            print("Please enter a valid number for the ranking.")
+            return rank_items(cost_guard_rankings, player_rankings)
     else:
         print("Invalid item. Please select an item from the list.")
-        clearScreen()
-        rankItems()
-    playerRankings.append(input("Rank " + str(i+1) + ": "))
+        return rank_items(cost_guard_rankings, player_rankings)
 
-runGame()
+    return player_rankings
+run_game()
